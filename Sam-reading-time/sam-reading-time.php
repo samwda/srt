@@ -1,14 +1,14 @@
 <?php
 /**
  * Plugin Name: Sam Reading Time
- * Plugin URI:  https://github.com/samahjoob/srt/
+ * Plugin URI:  https://github.com/samahjoob/srt
  * Description: A lightweight WordPress plugin to display the estimated reading time of posts and pages using the [sam_reading_time] shortcode.
  * Version:     1.0
  * Author:      Seyyed Ahmadreza Mahjoob
  * Author URI:  https://samwda.ir
  * License:     GPLv2
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: Sam-reading-time
+ * Text Domain: sam-reading-time
  * Domain Path: /languages
  */
 
@@ -35,19 +35,20 @@ class Sam_Reading_Time_Plugin {
         add_action( 'admin_menu', array( $this, 'add_admin_menu' ) );
         add_action( 'admin_init', array( $this, 'initialize_settings' ) );
 
-        // Load plugin text domain for internationalization
-        add_action( 'plugins_loaded', array( $this, 'load_plugin_textdomain' ) );
+        // Removed load_plugin_textdomain() as it's automatically handled by WordPress.org for hosted plugins.
+        // add_action( 'plugins_loaded', array( $this, 'load_plugin_textdomain' ) );
 
         // Add custom CSS to the frontend
         add_action( 'wp_head', array( $this, 'add_custom_css_to_frontend' ) );
     }
 
     /**
-     * Loads the plugin's text domain for translation.
+     * Removed load_plugin_textdomain method as it's no longer needed for WordPress.org hosted plugins.
+     *
+     * public function load_plugin_textdomain() {
+     * load_plugin_textdomain( 'sam-reading-time', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
+     * }
      */
-    public function load_plugin_textdomain() {
-        load_plugin_textdomain( 'Sam-reading-time', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
-    }
 
     /**
      * Counts the number of words in a given text content.
@@ -88,10 +89,10 @@ class Sam_Reading_Time_Plugin {
         // Get global settings directly. Shortcode attributes are ignored for most settings.
         $words_per_minute        = get_option( 'sam_reading_time_words_per_minute', 200 );
         /* translators: %1$s: The number of minutes. */
-        $singular_format         = get_option( 'sam_reading_time_singular_format', esc_html__( '%1$s minute read', 'Sam-reading-time' ) );
+        $singular_format         = get_option( 'sam_reading_time_singular_format', esc_html__( '%1$s minute read', 'sam-reading-time' ) );
         /* translators: %1$s: The number of minutes. */
-        $plural_format           = get_option( 'sam_reading_time_plural_format', esc_html__( '%1$s minutes read', 'Sam-reading-time' ) );
-        $less_than_a_minute_format = get_option( 'sam_reading_time_less_than_a_minute_format', esc_html__( 'Less than a minute read', 'Sam-reading-time' ) );
+        $plural_format           = get_option( 'sam_reading_time_plural_format', esc_html__( '%1$s minutes read', 'sam-reading-time' ) );
+        $less_than_a_minute_format = get_option( 'sam_reading_time_less_than_a_minute_format', esc_html__( 'Less than a minute read', 'sam-reading-time' ) );
         $prefix_text             = get_option( 'sam_reading_time_prefix_text', '' );
         $suffix_text             = get_option( 'sam_reading_time_suffix_text', '' );
         $wrapper_tag             = get_option( 'sam_reading_time_wrapper_tag', 'span' );
@@ -117,7 +118,7 @@ class Sam_Reading_Time_Plugin {
         // If post ID is still not found, return a debug message or empty string.
         if ( ! $post_id ) {
             if ( $enable_debug_output ) {
-                $debug_message = esc_html__( 'Sam Reading Time Debug: Post ID not found. Shortcode might be used in an unsupported context (e.g., outside the main loop, non-singular page).', 'Sam-reading-time' );
+                $debug_message = esc_html__( 'Sam Reading Time Debug: Post ID not found. Shortcode might be used in an unsupported context (e.g., outside the main loop, non-singular page).', 'sam-reading-time' );
                 return '<span style="color: red; direction:ltr; text-align:left; display:block; padding: 5px; border: 1px dashed red;">' . $debug_message . '</span>';
             }
             return '';
@@ -137,7 +138,7 @@ class Sam_Reading_Time_Plugin {
         if ( empty( $content_to_count ) ) {
             if ( $enable_debug_output ) {
                 /* translators: %1$s: The Post ID. */
-                return '<span style="color: orange; direction:ltr; text-align:left; display:block; padding: 5px; border: 1px dashed orange;">' . sprintf( esc_html__( 'Sam Reading Time Debug: No content found for Post ID %1$s.', 'Sam-reading-time' ), absint( $post_id ) ) . '</span>';
+                return '<span style="color: orange; direction:ltr; text-align:left; display:block; padding: 5px; border: 1px dashed orange;">' . sprintf( esc_html__( 'Sam Reading Time Debug: No content found for Post ID %1$s.', 'sam-reading-time' ), absint( $post_id ) ) . '</span>';
             }
             return '';
         }
@@ -149,7 +150,7 @@ class Sam_Reading_Time_Plugin {
         if ( $word_count === 0 ) {
             if ( $enable_debug_output ) {
                 /* translators: %1$s: The Post ID. */
-                return '<span style="color: orange; direction:ltr; text-align:left; display:block; padding: 5px; border: 1px dashed orange;">' . sprintf( esc_html__( 'Sam Reading Time Debug: Word count is 0 for Post ID %1$s.', 'Sam-reading-time' ), absint( $post_id ) ) . '</span>';
+                return '<span style="color: orange; direction:ltr; text-align:left; display:block; padding: 5px; border: 1px dashed orange;">' . sprintf( esc_html__( 'Sam Reading Time Debug: Word count is 0 for Post ID %1$s.', 'sam-reading-time' ), absint( $post_id ) ) . '</span>';
             }
             return '';
         }
@@ -185,7 +186,7 @@ class Sam_Reading_Time_Plugin {
         // Add debug output if enabled
         if ( $enable_debug_output ) {
             /* translators: %1$s: The word count. %2$s: The raw reading time. */
-            $final_output .= ' <span style="font-size:0.8em; opacity:0.7; direction:ltr; text-align:left; background-color: #f0f0f0; padding: 2px 5px; border-radius: 3px;">(' . sprintf( esc_html__( 'Words: %1$s, Raw Time: %2$s', 'Sam-reading-time' ), absint( $word_count ), number_format($raw_reading_time, 2) ) . ')</span>';
+            $final_output .= ' <span style="font-size:0.8em; opacity:0.7; direction:ltr; text-align:left; background-color: #f0f0f0; padding: 2px 5px; border-radius: 3px;">(' . sprintf( esc_html__( 'Words: %1$s, Raw Time: %2$s', 'sam-reading-time' ), absint( $word_count ), number_format($raw_reading_time, 2) ) . ')</span>';
         }
 
         // Prepare CSS classes.
@@ -203,8 +204,8 @@ class Sam_Reading_Time_Plugin {
     public function add_admin_menu() {
         add_submenu_page(
             'edit.php', // Parent slug for Posts menu
-            esc_html__( 'Sam Reading Time Settings', 'Sam-reading-time' ), // Page title
-            esc_html__( 'Sam Reading Time', 'Sam-reading-time' ),       // Menu title
+            esc_html__( 'Sam Reading Time Settings', 'sam-reading-time' ), // Page title
+            esc_html__( 'Sam Reading Time', 'sam-reading-time' ),       // Menu title
             'manage_options',                                                // Capability required to access
             'sam-reading-time',                                              // Menu slug
             array( $this, 'options_page_html' )                              // Callback function to display page HTML
@@ -218,7 +219,7 @@ class Sam_Reading_Time_Plugin {
         // Register a settings section.
         add_settings_section(
             'sam_reading_time_plugin_section',
-            esc_html__( 'General Settings', 'Sam-reading-time' ),
+            esc_html__( 'General Settings', 'sam-reading-time' ),
             array( $this, 'reading_time_settings_section_callback' ),
             'sam-reading-time'
         );
@@ -226,7 +227,7 @@ class Sam_Reading_Time_Plugin {
         // Register field for Words Per Minute (WPM).
         add_settings_field(
             'sam_reading_time_words_per_minute',
-            esc_html__( 'Words Per Minute (WPM)', 'Sam-reading-time' ),
+            esc_html__( 'Words Per Minute (WPM)', 'sam-reading-time' ),
             array( $this, 'words_per_minute_callback' ),
             'sam-reading-time',
             'sam_reading_time_plugin_section'
@@ -245,7 +246,7 @@ class Sam_Reading_Time_Plugin {
         // Register field for Singular Format.
         add_settings_field(
             'sam_reading_time_singular_format',
-            esc_html__( 'Singular Format (e.g., 1 minute)', 'Sam-reading-time' ),
+            esc_html__( 'Singular Format (e.g., 1 minute)', 'sam-reading-time' ),
             array( $this, 'singular_format_callback' ),
             'sam-reading-time',
             'sam_reading_time_plugin_section'
@@ -257,7 +258,7 @@ class Sam_Reading_Time_Plugin {
                 'type'              => 'string',
                 'sanitize_callback' => 'sanitize_text_field',
                 /* translators: %1$s: The number of minutes. */
-                'default'           => esc_html__( '%1$s minute read', 'Sam-reading-time' ),
+                'default'           => esc_html__( '%1$s minute read', 'sam-reading-time' ),
                 'show_in_rest'      => false,
             )
         );
@@ -265,7 +266,7 @@ class Sam_Reading_Time_Plugin {
         // Register field for Plural Format.
         add_settings_field(
             'sam_reading_time_plural_format',
-            esc_html__( 'Plural Format (e.g., 2 minutes)', 'Sam-reading-time' ),
+            esc_html__( 'Plural Format (e.g., 2 minutes)', 'sam-reading-time' ),
             array( $this, 'plural_format_callback' ),
             'sam-reading-time',
             'sam_reading_time_plugin_section'
@@ -277,7 +278,7 @@ class Sam_Reading_Time_Plugin {
                 'type'              => 'string',
                 'sanitize_callback' => 'sanitize_text_field',
                 /* translators: %1$s: The number of minutes. */
-                'default'           => esc_html__( '%1$s minutes read', 'Sam-reading-time' ),
+                'default'           => esc_html__( '%1$s minutes read', 'sam-reading-time' ),
                 'show_in_rest'      => false,
             )
         );
@@ -285,7 +286,7 @@ class Sam_Reading_Time_Plugin {
         // Register field for "Less than a minute" format.
         add_settings_field(
             'sam_reading_time_less_than_a_minute_format',
-            esc_html__( 'Less Than A Minute Format', 'Sam-reading-time' ),
+            esc_html__( 'Less Than A Minute Format', 'sam-reading-time' ),
             array( $this, 'less_than_a_minute_format_callback' ),
             'sam-reading-time',
             'sam_reading_time_plugin_section'
@@ -296,7 +297,7 @@ class Sam_Reading_Time_Plugin {
             array(
                 'type'              => 'string',
                 'sanitize_callback' => 'sanitize_text_field',
-                'default'           => esc_html__( 'Less than a minute read', 'Sam-reading-time' ),
+                'default'           => esc_html__( 'Less than a minute read', 'sam-reading-time' ),
                 'show_in_rest'      => false,
             )
         );
@@ -304,7 +305,7 @@ class Sam_Reading_Time_Plugin {
         // Register field for Hide if Less Than A Minute.
         add_settings_field(
             'sam_reading_time_hide_if_less_than_a_minute',
-            esc_html__( 'Hide if Less Than A Minute', 'Sam-reading-time' ),
+            esc_html__( 'Hide if Less Than A Minute', 'sam-reading-time' ),
             array( $this, 'hide_if_less_than_a_minute_callback' ),
             'sam-reading-time',
             'sam_reading_time_plugin_section'
@@ -323,7 +324,7 @@ class Sam_Reading_Time_Plugin {
         // Register field for Prefix Text.
         add_settings_field(
             'sam_reading_time_prefix_text',
-            esc_html__( 'Prefix Text', 'Sam-reading-time' ),
+            esc_html__( 'Prefix Text', 'sam-reading-time' ),
             array( $this, 'prefix_text_callback' ),
             'sam-reading-time',
             'sam_reading_time_plugin_section'
@@ -342,7 +343,7 @@ class Sam_Reading_Time_Plugin {
         // Register field for Suffix Text.
         add_settings_field(
             'sam_reading_time_suffix_text',
-            esc_html__( 'Suffix Text', 'Sam-reading-time' ),
+            esc_html__( 'Suffix Text', 'sam-reading-time' ),
             array( $this, 'suffix_text_callback' ),
             'sam-reading-time',
             'sam_reading_time_plugin_section'
@@ -361,7 +362,7 @@ class Sam_Reading_Time_Plugin {
         // Register field for Wrapper HTML Tag.
         add_settings_field(
             'sam_reading_time_wrapper_tag',
-            esc_html__( 'Wrapper HTML Tag', 'Sam-reading-time' ),
+            esc_html__( 'Wrapper HTML Tag', 'sam-reading-time' ),
             array( $this, 'wrapper_tag_callback' ),
             'sam-reading-time',
             'sam_reading_time_plugin_section'
@@ -380,7 +381,7 @@ class Sam_Reading_Time_Plugin {
         // Register field for Custom CSS Styles.
         add_settings_field(
             'sam_reading_time_custom_styles',
-            esc_html__( 'Custom CSS Styles', 'Sam-reading-time' ),
+            esc_html__( 'Custom CSS Styles', 'sam-reading-time' ),
             array( $this, 'custom_styles_callback' ),
             'sam-reading-time',
             'sam_reading_time_plugin_section'
@@ -402,7 +403,7 @@ class Sam_Reading_Time_Plugin {
         // Register field for Enable Debug Output.
         add_settings_field(
             'sam_reading_time_enable_debug_output',
-            esc_html__( 'Enable Debug Output', 'Sam-reading-time' ),
+            esc_html__( 'Enable Debug Output', 'sam-reading-time' ),
             array( $this, 'enable_debug_output_callback' ),
             'sam-reading-time',
             'sam_reading_time_plugin_section'
@@ -423,7 +424,7 @@ class Sam_Reading_Time_Plugin {
      * Callback for the settings section description.
      */
     public function reading_time_settings_section_callback() {
-        echo '<p>' . esc_html__( 'Configure the general display settings for the Sam Reading Time plugin here.', 'Sam-reading-time' ) . '</p>';
+        echo '<p>' . esc_html__( 'Configure the general display settings for the Sam Reading Time plugin here.', 'sam-reading-time' ) . '</p>';
     }
 
     /**
@@ -433,7 +434,7 @@ class Sam_Reading_Time_Plugin {
         $wpm = get_option( 'sam_reading_time_words_per_minute', 200 );
         // Using absint for output to ensure it's a positive integer, though sanitize_words_per_minute handles input.
         echo '<input type="number" name="sam_reading_time_words_per_minute" value="' . absint( $wpm ) . '" min="1" class="regular-text" />';
-        echo '<p class="description">' . esc_html__( 'Average number of words a person reads per minute.', 'Sam-reading-time' ) . '</p>';
+        echo '<p class="description">' . esc_html__( 'Average number of words a person reads per minute.', 'sam-reading-time' ) . '</p>';
     }
 
     /**
@@ -451,29 +452,29 @@ class Sam_Reading_Time_Plugin {
      * Callback for the Singular Format settings field.
      */
     public function singular_format_callback() {
-        $format = get_option( 'sam_reading_time_singular_format', esc_html__( '%1$s minute read', 'Sam-reading-time' ) );
+        $format = get_option( 'sam_reading_time_singular_format', esc_html__( '%1$s minute read', 'sam-reading-time' ) );
         echo '<input type="text" name="sam_reading_time_singular_format" value="' . esc_attr( $format ) . '" class="regular-text" />';
         // Using literal text for example to avoid placeholder issues with sprintf.
-        echo '<p class="description">' . esc_html__( 'Use %s for the reading time. Example: "1 minute read"', 'Sam-reading-time' ) . '</p>';
+        echo '<p class="description">' . esc_html__( 'Use %s for the reading time. Example: "1 minute read"', 'sam-reading-time' ) . '</p>';
     }
 
     /**
      * Callback for the Plural Format settings field.
      */
     public function plural_format_callback() {
-        $format = get_option( 'sam_reading_time_plural_format', esc_html__( '%1$s minutes read', 'Sam-reading-time' ) );
+        $format = get_option( 'sam_reading_time_plural_format', esc_html__( '%1$s minutes read', 'sam-reading-time' ) );
         echo '<input type="text" name="sam_reading_time_plural_format" value="' . esc_attr( $format ) . '" class="regular-text" />';
         // Using literal text for example to avoid placeholder issues with sprintf.
-        echo '<p class="description">' . esc_html__( 'Use %s for the reading time. Example: "2 minutes read"', 'Sam-reading-time' ) . '</p>';
+        echo '<p class="description">' . esc_html__( 'Use %s for the reading time. Example: "2 minutes read"', 'sam-reading-time' ) . '</p>';
     }
 
     /**
      * Callback for the "Less Than A Minute" Format settings field.
      */
     public function less_than_a_minute_format_callback() {
-        $format = get_option( 'sam_reading_time_less_than_a_minute_format', esc_html__( 'Less than a minute read', 'Sam-reading-time' ) );
+        $format = get_option( 'sam_reading_time_less_than_a_minute_format', esc_html__( 'Less than a minute read', 'sam-reading-time' ) );
         echo '<input type="text" name="sam_reading_time_less_than_a_minute_format" value="' . esc_attr( $format ) . '" class="regular-text" />';
-        echo '<p class="description">' . esc_html__( 'Text to display for articles that take less than one minute to read.', 'Sam-reading-time' ) . '</p>';
+        echo '<p class="description">' . esc_html__( 'Text to display for articles that take less than one minute to read.', 'sam-reading-time' ) . '</p>';
     }
 
     /**
@@ -482,7 +483,7 @@ class Sam_Reading_Time_Plugin {
     public function hide_if_less_than_a_minute_callback() {
         $hide = get_option( 'sam_reading_time_hide_if_less_than_a_minute', false );
         echo '<input type="checkbox" name="sam_reading_time_hide_if_less_than_a_minute" value="1" ' . checked( 1, $hide, false ) . ' />';
-        echo '<p class="description">' . esc_html__( 'Check this box to hide the reading time output if it is less than one minute.', 'Sam-reading-time' ) . '</p>';
+        echo '<p class="description">' . esc_html__( 'Check this box to hide the reading time output if it is less than one minute.', 'sam-reading-time' ) . '</p>';
     }
 
     /**
@@ -491,7 +492,7 @@ class Sam_Reading_Time_Plugin {
     public function prefix_text_callback() {
         $prefix = get_option( 'sam_reading_time_prefix_text', '' );
         echo '<input type="text" name="sam_reading_time_prefix_text" value="' . esc_attr( $prefix ) . '" class="regular-text" />';
-        echo '<p class="description">' . esc_html__( 'Text to display before the reading time. Example: "Estimated reading time: "', 'Sam-reading-time' ) . '</p>';
+        echo '<p class="description">' . esc_html__( 'Text to display before the reading time. Example: "Estimated reading time: "', 'sam-reading-time' ) . '</p>';
     }
 
     /**
@@ -500,7 +501,7 @@ class Sam_Reading_Time_Plugin {
     public function suffix_text_callback() {
         $suffix = get_option( 'sam_reading_time_suffix_text', '' );
         echo '<input type="text" name="sam_reading_time_suffix_text" value="' . esc_attr( $suffix ) . '" class="regular-text" />';
-        echo '<p class="description">' . esc_html__( 'Text to display after the reading time. Example: " (approx.)"', 'Sam-reading-time' ) . '</p>';
+        echo '<p class="description">' . esc_html__( 'Text to display after the reading time. Example: " (approx.)"', 'sam-reading-time' ) . '</p>';
     }
 
     /**
@@ -516,7 +517,7 @@ class Sam_Reading_Time_Plugin {
             <option value="strong" <?php selected( $tag, 'strong' ); ?>>strong</option>
             <option value="em" <?php selected( $tag, 'em' ); ?>>em</option>
         </select>
-        <p class="description"><?php esc_html_e( 'Choose the HTML tag to wrap the reading time output. This affects its display behavior.', 'Sam-reading-time' ) . '<br>' . esc_html__( 'For inline display, use "span". For block display, use "div" or "p".', 'Sam-reading-time' ); ?></p>
+        <p class="description"><?php esc_html_e( 'Choose the HTML tag to wrap the reading time output. This affects its display behavior.', 'sam-reading-time' ) . '<br>' . esc_html__( 'For inline display, use "span". For block display, use "div" or "p".', 'sam-reading-time' ); ?></p>
         <?php
     }
 
@@ -540,8 +541,8 @@ class Sam_Reading_Time_Plugin {
         $styles = get_option( 'sam_reading_time_custom_styles', '' );
         // Using esc_textarea to properly escape the value for HTML textarea.
         echo '<textarea name="sam_reading_time_custom_styles" rows="10" class="large-text code">' . esc_textarea( $styles ) . '</textarea>';
-        echo '<p class="description">' . esc_html__( 'Enter your custom CSS styles here. These styles will be applied to the reading time output. Use the class ".reading-time" for default styling.', 'Sam-reading-time' ) . '</p>';
-        echo '<p class="description"><strong>' . esc_html__( 'Example:', 'Sam-reading-time' ) . '</strong></p>';
+        echo '<p class="description">' . esc_html__( 'Enter your custom CSS styles here. These styles will be applied to the reading time output. Use the class ".reading-time" for default styling.', 'sam-reading-time' ) . '</p>';
+        echo '<p class="description"><strong>' . esc_html__( 'Example:', 'sam-reading-time' ) . '</strong></p>';
         echo '<pre><code>.reading-time {
     color: #28a745; /* Green color */
     font-size: 1.2em;
@@ -561,7 +562,7 @@ class Sam_Reading_Time_Plugin {
     public function enable_debug_output_callback() {
         $enable_debug = get_option( 'sam_reading_time_enable_debug_output', false );
         echo '<input type="checkbox" name="sam_reading_time_enable_debug_output" value="1" ' . checked( 1, $enable_debug, false ) . ' />';
-        echo '<p class="description">' . esc_html__( 'Check this box to display word count and raw reading time next to the output for debugging purposes.', 'Sam-reading-time' ) . '</p>';
+        echo '<p class="description">' . esc_html__( 'Check this box to display word count and raw reading time next to the output for debugging purposes.', 'sam-reading-time' ) . '</p>';
     }
 
     /**
@@ -788,23 +789,23 @@ class Sam_Reading_Time_Plugin {
                     // Output settings sections and fields.
                     do_settings_sections( 'sam-reading-time' );
                     // Output save changes button.
-                    submit_button( esc_html__( 'Save Changes', 'Sam-reading-time' ) );
+                    submit_button( esc_html__( 'Save Changes', 'sam-reading-time' ) );
                     ?>
                 </form>
 
                 <div class="usage-instructions">
-                    <h2><?php esc_html_e( 'How to Use the Sam Reading Time Plugin', 'Sam-reading-time' ); ?></h2>
-                    <p><?php esc_html_e( 'This plugin allows you to display the estimated reading time of your posts and pages using a simple shortcode. All display formats and calculation settings are managed from this page.', 'Sam-reading-time' ); ?></p>
+                    <h2><?php esc_html_e( 'How to Use the Sam Reading Time Plugin', 'sam-reading-time' ); ?></h2>
+                    <p><?php esc_html_e( 'This plugin allows you to display the estimated reading time of your posts and pages using a simple shortcode. All display formats and calculation settings are managed from this page.', 'sam-reading-time' ); ?></p>
 
-                    <h3><?php esc_html_e( 'Basic Usage', 'Sam-reading-time' ); ?></h3>
-                    <p><?php esc_html_e( 'Simply add the following shortcode anywhere in your post or page content:', 'Sam-reading-time' ); ?></p>
+                    <h3><?php esc_html_e( 'Basic Usage', 'sam-reading-time' ); ?></h3>
+                    <p><?php esc_html_e( 'Simply add the following shortcode anywhere in your post or page content:', 'sam-reading-time' ); ?></p>
                     <p><code>[sam_reading_time]</code></p>
-                    <p><?php esc_html_e( 'This will display the reading time based on the global settings configured above.', 'Sam-reading-time' ); ?></p>
+                    <p><?php esc_html_e( 'This will display the reading time based on the global settings configured above.', 'sam-reading-time' ); ?></p>
 
-                    <h3><?php esc_html_e( 'Custom Styling', 'Sam-reading-time' ); ?></h3>
-                    <p><?php esc_html_e( 'The output of the shortcode is wrapped in an HTML tag with the default class ', 'Sam-reading-time' ); ?><code>.reading-time</code>.
-                    <?php esc_html_e( 'You can use the "Custom CSS Styles" field for advanced styling.', 'Sam-reading-time' ); ?></p>
-                    <p><?php esc_html_e( 'Example CSS for the ', 'Sam-reading-time' ); ?><code>.reading-time</code> <?php esc_html_e( 'class:', 'Sam-reading-time' ); ?></p>
+                    <h3><?php esc_html_e( 'Custom Styling', 'sam-reading-time' ); ?></h3>
+                    <p><?php esc_html_e( 'The output of the shortcode is wrapped in an HTML tag with the default class ', 'sam-reading-time' ); ?><code>.reading-time</code>.
+                    <?php esc_html_e( 'You can use the "Custom CSS Styles" field for advanced styling.', 'sam-reading-time' ); ?></p>
+                    <p><?php esc_html_e( 'Example CSS for the ', 'sam-reading-time' ); ?><code>.reading-time</code> <?php esc_html_e( 'class:', 'sam-reading-time' ); ?></p>
                     <pre><code>.reading-time {
     font-weight: bold;
     color: #007bff;
