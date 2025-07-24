@@ -6,10 +6,8 @@
  * Version:     1.0
  * Author:      Seyyed Ahmadreza Mahjoob
  * Author URI:  https://samwda.ir
- * License:     GPL2
+ * License:     GPLv2
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain: sam-reading-time
- * Domain Path: /languages
  */
 
 // Prevent direct access to the file
