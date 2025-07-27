@@ -8,7 +8,7 @@
 
 - Estimate reading time based on word count
 - Lightweight and easy to use
-- Works via the `[sam_reading_time]` shortcode
+- Works via `[sam_reading_time]` shortcode
 - No settings page or database queries
 - Clean output – fully theme-compatible
 - Translation-ready and extendable
@@ -71,7 +71,7 @@ Released under the **GPLv2 License**
 
 ## 👨‍💻 Author
 
-**Seyed Ahmadreza Mahjoub**  
+**Seyyed Ahmadreza Mahjoob**  
 🔗 Website: [samwda.ir](https://samwda.ir)  
 📦 GitHub: [github.com/samahjoob](https://github.com/samahjoob)
 
