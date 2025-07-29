@@ -71,9 +71,9 @@ Released under the **GPLv2 License**
 
 ## 👨‍💻 Author
 
-**Seyyed Ahmadreza Mahjoob**  
+**SAM Web Design Agency**  
 🔗 Website: [samwda.ir](https://samwda.ir)  
-📦 GitHub: [github.com/samahjoob](https://github.com/samahjoob)
+📦 GitHub: [github.com/samwda](https://github.com/samwda)
 
 ---
 
