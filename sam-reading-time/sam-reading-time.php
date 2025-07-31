@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Sam Reading Time
- * Plugin URI:  https://github.com/samahjoob/srt
+ * Plugin URI:  https://github.com/samwda/srt/
  * Description: A lightweight WordPress plugin to display the estimated reading time of posts and pages using the [sam_reading_time] shortcode.
  * Version:     1.0
  * Author:      Seyyed Ahmadreza Mahjoob
@@ -9,7 +9,8 @@
  * License:     GPLv2
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: sam-reading-time
- * Domain Path: /languages
+ * Requires at least: 5.0
+ * Requires PHP: 7.2
  */
 
 // Prevent direct access to the file
@@ -36,19 +37,24 @@ class Sam_Reading_Time_Plugin {
         add_action( 'admin_init', array( $this, 'initialize_settings' ) );
 
         // Removed load_plugin_textdomain() as it's automatically handled by WordPress.org for hosted plugins.
-        // add_action( 'plugins_loaded', array( $this, 'load_plugin_textdomain' ) );
+        // The 'plugins_loaded' action for text domain loading is no longer needed.
 
-        // Add custom CSS to the frontend
-        add_action( 'wp_head', array( $this, 'add_custom_css_to_frontend' ) );
+        // Add custom CSS to the frontend (now directly enqueues a static CSS file)
+        add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_plugin_styles' ) );
     }
 
     /**
-     * Removed load_plugin_textdomain method as it's no longer needed for WordPress.org hosted plugins.
-     *
-     * public function load_plugin_textdomain() {
-     * load_plugin_textdomain( 'sam-reading-time', false, dirname( plugin_basename( __FILE__ ) ) . '/languages/' );
-     * }
+     * Enqueues the plugin's CSS file.
+     * This replaces the custom CSS input feature.
      */
+    public function enqueue_plugin_styles() {
+        wp_enqueue_style(
+            'sam-reading-time-style', // Handle for the stylesheet
+            plugin_dir_url( __FILE__ ) . 'assets/css/sam-reading-time-style.css', // Path to your CSS file
+            array(), // Dependencies (none in this case)
+            filemtime( plugin_dir_path( __FILE__ ) . 'assets/css/sam-reading-time-style.css' ) // Version based on file modification time
+        );
+    }
 
     /**
      * Counts the number of words in a given text content.
@@ -378,27 +384,9 @@ class Sam_Reading_Time_Plugin {
             )
         );
 
-        // Register field for Custom CSS Styles.
-        add_settings_field(
-            'sam_reading_time_custom_styles',
-            esc_html__( 'Custom CSS Styles', 'sam-reading-time' ),
-            array( $this, 'custom_styles_callback' ),
-            'sam-reading-time',
-            'sam_reading_time_plugin_section'
-        );
-        register_setting(
-            'sam_reading_time',
-            'sam_reading_time_custom_styles',
-            array(
-                'type'              => 'string',
-                // Using wp_strip_all_tags for CSS is a basic protection.
-                // For full CSS sanitization, a more robust solution might be needed for complex inputs,
-                // but for general user input, this prevents script injection.
-                'sanitize_callback' => 'wp_strip_all_tags',
-                'default'           => '',
-                'show_in_rest'      => false,
-            )
-        );
+        // Removed Custom CSS Styles field as it's not allowed for WordPress.org plugins.
+        // add_settings_field( ... );
+        // register_setting( ... );
 
         // Register field for Enable Debug Output.
         add_settings_field(
@@ -534,27 +522,7 @@ class Sam_Reading_Time_Plugin {
         return in_array( $input, $allowed_tags, true ) ? sanitize_key( $input ) : 'span';
     }
 
-    /**
-     * Callback for the Custom CSS Styles textarea field.
-     */
-    public function custom_styles_callback() {
-        $styles = get_option( 'sam_reading_time_custom_styles', '' );
-        // Using esc_textarea to properly escape the value for HTML textarea.
-        echo '<textarea name="sam_reading_time_custom_styles" rows="10" class="large-text code">' . esc_textarea( $styles ) . '</textarea>';
-        echo '<p class="description">' . esc_html__( 'Enter your custom CSS styles here. These styles will be applied to the reading time output. Use the class ".reading-time" for default styling.', 'sam-reading-time' ) . '</p>';
-        echo '<p class="description"><strong>' . esc_html__( 'Example:', 'sam-reading-time' ) . '</strong></p>';
-        echo '<pre><code>.reading-time {
-    color: #28a745; /* Green color */
-    font-size: 1.2em;
-    font-weight: 600;
-    font-family: "Georgia", serif;
-    padding: 5px 10px;
-    border: 1px solid #28a745;
-    border-radius: 8px;
-    background-color: #e6ffe6;
-    display: inline-block;
-}</code></pre>';
-    }
+    // Removed custom_styles_callback method.
 
     /**
      * Callback for the Enable Debug Output checkbox.
@@ -565,17 +533,7 @@ class Sam_Reading_Time_Plugin {
         echo '<p class="description">' . esc_html__( 'Check this box to display word count and raw reading time next to the output for debugging purposes.', 'sam-reading-time' ) . '</p>';
     }
 
-    /**
-     * Adds custom CSS from settings to the frontend.
-     */
-    public function add_custom_css_to_frontend() {
-        $custom_styles = get_option( 'sam_reading_time_custom_styles', '' );
-        if ( ! empty( $custom_styles ) ) {
-            // wp_strip_all_tags is used here as a basic safety measure to remove any HTML tags.
-            // esc_html is then used to escape any remaining characters that could break out of the style tag.
-            echo '<style type="text/css" id="sam-reading-time-custom-styles">' . esc_html( wp_strip_all_tags( $custom_styles ) ) . '</style>';
-        }
-    }
+    // Removed add_custom_css_to_frontend method.
 
     /**
      * Displays the HTML for the plugin's settings page.
@@ -804,7 +762,7 @@ class Sam_Reading_Time_Plugin {
 
                     <h3><?php esc_html_e( 'Custom Styling', 'sam-reading-time' ); ?></h3>
                     <p><?php esc_html_e( 'The output of the shortcode is wrapped in an HTML tag with the default class ', 'sam-reading-time' ); ?><code>.reading-time</code>.
-                    <?php esc_html_e( 'You can use the "Custom CSS Styles" field for advanced styling.', 'sam-reading-time' ); ?></p>
+                    <?php esc_html_e( 'For custom styling, please use the WordPress Customizer (Appearance > Customize > Additional CSS).', 'sam-reading-time' ); ?></p>
                     <p><?php esc_html_e( 'Example CSS for the ', 'sam-reading-time' ); ?><code>.reading-time</code> <?php esc_html_e( 'class:', 'sam-reading-time' ); ?></p>
                     <pre><code>.reading-time {
     font-weight: bold;
