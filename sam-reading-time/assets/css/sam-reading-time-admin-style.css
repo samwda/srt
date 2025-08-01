@@ -1,0 +1,189 @@
+/* General Styling for Admin Settings Page */
+.sam-settings-container {
+    background-color: #fcfcfc;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    max-width: 900px;
+    margin: 40px auto;
+    font-family: 'Inter', sans-serif;
+    color: #333;
+    line-height: 1.7;
+    border: 1px solid #e0e0e0;
+    direction: ltr;
+    text-align: left;
+}
+
+.sam-settings-container h1 {
+    color: #007bff;
+    font-size: 2.8em;
+    margin-bottom: 30px;
+    text-align: center;
+    font-weight: 700;
+    border-bottom: 3px solid #e9f5ff;
+    padding-bottom: 15px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.sam-settings-container h2 {
+    color: #34495e;
+    font-size: 2em;
+    margin-top: 45px;
+    margin-bottom: 25px;
+    border-bottom: 2px solid #f0f4f7;
+    padding-bottom: 10px;
+    font-weight: 600;
+}
+
+.sam-settings-container p {
+    margin-bottom: 18px;
+}
+
+/* Form Styling */
+.sam-settings-container form {
+    background-color: #ffffff;
+    padding: 35px;
+    border-radius: 12px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
+    border: 1px solid #f0f0f0;
+}
+
+.form-table th {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    font-weight: 600;
+    vertical-align: middle;
+    width: 35%;
+    color: #555;
+    text-align: left;
+}
+
+.form-table td {
+    padding-top: 20px;
+    padding-bottom: 20px;
+    text-align: left;
+}
+
+.regular-text, input[type="number"], select, textarea.code {
+    width: 100%;
+    max-width: 450px;
+    padding: 12px 15px;
+    border: 1px solid #dcdcdc;
+    border-radius: 8px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    font-size: 1em;
+    direction: ltr;
+    text-align: left;
+}
+
+.regular-text:focus, input[type="number"]:focus, select:focus, textarea.code:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
+    outline: none;
+}
+
+input[type="checkbox"] {
+    width: auto;
+    margin-right: 8px;
+    transform: scale(1.2);
+    vertical-align: middle;
+}
+
+.description {
+    font-size: 0.9em;
+    color: #7a7a7a;
+    margin-top: 8px;
+    line-height: 1.5;
+}
+
+textarea.code {
+    font-family: 'Consolas', 'Monaco', monospace;
+    background-color: #f8f9fa;
+    border: 1px solid #e0e7ed;
+}
+
+/* Submit Button */
+.submit {
+    padding-top: 30px;
+    text-align: center;
+}
+
+.submit .button-primary {
+    background: linear-gradient(to right, #007bff, #0056b3);
+    border: none;
+    box-shadow: 0 5px 15px rgba(0, 123, 255, 0.25);
+    text-shadow: none;
+    border-radius: 8px;
+    padding: 14px 30px;
+    font-size: 1.2em;
+    font-weight: 600;
+    height: auto;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: #fff;
+}
+
+.submit .button-primary:hover,
+.submit .button-primary:focus {
+    background: linear-gradient(to right, #0056b3, #004085);
+    box-shadow: 0 8px 20px rgba(0, 123, 255, 0.35);
+    transform: translateY(-2px);
+}
+
+/* Usage Instructions */
+.usage-instructions {
+    background-color: #e6f7ff;
+    border: 1px solid #b3e0ff;
+    border-radius: 12px;
+    padding: 30px;
+    margin-top: 50px;
+    color: #0056b3;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.03);
+}
+
+.usage-instructions h3 {
+    color: #004085;
+    font-size: 1.6em;
+    margin-top: 0;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+.usage-instructions code {
+    background-color: #cceeff;
+    padding: 4px 8px;
+    border-radius: 5px;
+    font-family: 'Consolas', 'Monaco', monospace;
+    color: #333;
+    font-size: 0.95em;
+    border: 1px solid #aaddff;
+    direction: ltr;
+    text-align: left;
+}
+
+.usage-instructions ul {
+    list-style-type: '🚀 '; /* Custom bullet point */
+    margin-left: 25px;
+    padding-left: 0;
+}
+
+.usage-instructions ul li {
+    margin-bottom: 10px;
+}
+
+.usage-instructions strong {
+    color: #004085;
+}
+
+pre {
+    background-color: #cceeff;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #aaddff;
+    overflow-x: auto;
+    font-size: 0.9em;
+    direction: ltr;
+    text-align: left;
+}
