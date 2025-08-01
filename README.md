@@ -1,4 +1,8 @@
 # ⏱️ Sam Reading Time (SRT) – WordPress Plugin
+[![WordPress Plugin](https://img.shields.io/wordpress/plugin/v/sam-reading-time.svg?style=flat-square)](https://wordpress.org/plugins/sam-reading-time/)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/samwda/srt?style=flat-square)](https://github.com/samwda/srt/releases)
+[![Active Installs](https://img.shields.io/wordpress/plugin/installs/sam-reading-time.svg?style=flat-square)](https://wordpress.org/plugins/sam-reading-time/)
+[![License](https://img.shields.io/github/license/samwda/srt?style=flat-square)](https://github.com/samwda/srt/blob/main/LICENSE)
 
 **Sam Reading Time (SRT)** is a super lightweight WordPress plugin that calculates and displays the estimated reading time for your posts and pages using a simple shortcode.
 
@@ -60,6 +64,18 @@ For example:
 
 - 765 words / 200 = 3.825
 - Rounded = 4 minutes
+
+---
+
+## 🌍 WordPress.org Repository
+
+Sam Reading Time is officially listed in the [WordPress Plugin Directory](https://wordpress.org/plugins/sam-reading-time/).
+
+### 📦 Install from WordPress Admin
+
+1. Navigate to **Plugins → Add New**.
+2. Search for **Sam Reading Time**.
+3. Click **Install Now**, then **Activate**.
 
 ---
 
