@@ -6,7 +6,7 @@
  * Version:     1.0
  * Author:      Seyyed Ahmadreza Mahjoob
  * Author URI:  https://samwda.ir
- * License:     GPLv2
+ * License:     GPL2
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: sam-reading-time
  * Requires at least: 5.0
@@ -36,16 +36,15 @@ class Sam_Reading_Time_Plugin {
         add_action( 'admin_menu', array( $this, 'add_admin_menu' ) );
         add_action( 'admin_init', array( $this, 'initialize_settings' ) );
 
-        // Removed load_plugin_textdomain() as it's automatically handled by WordPress.org for hosted plugins.
-        // The 'plugins_loaded' action for text domain loading is no longer needed.
-
-        // Add custom CSS to the frontend (now directly enqueues a static CSS file)
+        // Enqueue styles for the frontend
         add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_plugin_styles' ) );
+
+        // Enqueue styles for the admin settings page
+        add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_styles' ) );
     }
 
     /**
-     * Enqueues the plugin's CSS file.
-     * This replaces the custom CSS input feature.
+     * Enqueues the plugin's CSS file for the frontend.
      */
     public function enqueue_plugin_styles() {
         wp_enqueue_style(
@@ -53,6 +52,25 @@ class Sam_Reading_Time_Plugin {
             plugin_dir_url( __FILE__ ) . 'assets/css/sam-reading-time-style.css', // Path to your CSS file
             array(), // Dependencies (none in this case)
             filemtime( plugin_dir_path( __FILE__ ) . 'assets/css/sam-reading-time-style.css' ) // Version based on file modification time
+        );
+    }
+
+    /**
+     * Enqueues the plugin's CSS file specifically for the admin settings page.
+     *
+     * @param string $hook The current admin page.
+     */
+    public function enqueue_admin_styles( $hook ) {
+        // Only enqueue our styles on our specific settings page.
+        if ( 'posts_page_sam-reading-time' !== $hook ) {
+            return;
+        }
+
+        wp_enqueue_style(
+            'sam-reading-time-admin-style',
+            plugin_dir_url( __FILE__ ) . 'assets/css/sam-reading-time-admin-style.css',
+            array(),
+            filemtime( plugin_dir_path( __FILE__ ) . 'assets/css/sam-reading-time-admin-style.css' )
         );
     }
 
@@ -384,10 +402,6 @@ class Sam_Reading_Time_Plugin {
             )
         );
 
-        // Removed Custom CSS Styles field as it's not allowed for WordPress.org plugins.
-        // add_settings_field( ... );
-        // register_setting( ... );
-
         // Register field for Enable Debug Output.
         add_settings_field(
             'sam_reading_time_enable_debug_output',
@@ -522,8 +536,6 @@ class Sam_Reading_Time_Plugin {
         return in_array( $input, $allowed_tags, true ) ? sanitize_key( $input ) : 'span';
     }
 
-    // Removed custom_styles_callback method.
-
     /**
      * Callback for the Enable Debug Output checkbox.
      */
@@ -532,8 +544,6 @@ class Sam_Reading_Time_Plugin {
         echo '<input type="checkbox" name="sam_reading_time_enable_debug_output" value="1" ' . checked( 1, $enable_debug, false ) . ' />';
         echo '<p class="description">' . esc_html__( 'Check this box to display word count and raw reading time next to the output for debugging purposes.', 'sam-reading-time' ) . '</p>';
     }
-
-    // Removed add_custom_css_to_frontend method.
 
     /**
      * Displays the HTML for the plugin's settings page.
@@ -546,198 +556,6 @@ class Sam_Reading_Time_Plugin {
 
         ?>
         <div class="wrap">
-            <style>
-                /* General Styling */
-                .sam-settings-container {
-                    background-color: #fcfcfc;
-                    padding: 40px;
-                    border-radius: 15px;
-                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-                    max-width: 900px;
-                    margin: 40px auto;
-                    font-family: 'Inter', sans-serif;
-                    color: #333;
-                    line-height: 1.7;
-                    border: 1px solid #e0e0e0;
-                    direction: ltr; /* Ensure LTR for admin page */
-                    text-align: left; /* Ensure left alignment for admin page */
-                }
-
-                h1 {
-                    color: #007bff;
-                    font-size: 2.8em;
-                    margin-bottom: 30px;
-                    text-align: center;
-                    font-weight: 700;
-                    border-bottom: 3px solid #e9f5ff;
-                    padding-bottom: 15px;
-                    text-transform: uppercase;
-                    letter-spacing: 1px;
-                }
-
-                h2 {
-                    color: #34495e;
-                    font-size: 2em;
-                    margin-top: 45px;
-                    margin-bottom: 25px;
-                    border-bottom: 2px solid #f0f4f7;
-                    padding-bottom: 10px;
-                    font-weight: 600;
-                }
-
-                p {
-                    margin-bottom: 18px;
-                }
-
-                /* Form Styling */
-                form {
-                    background-color: #ffffff;
-                    padding: 35px;
-                    border-radius: 12px;
-                    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.04);
-                    border: 1px solid #f0f0f0;
-                }
-
-                .form-table th {
-                    padding-top: 20px;
-                    padding-bottom: 20px;
-                    font-weight: 600;
-                    vertical-align: middle;
-                    width: 35%;
-                    color: #555;
-                    text-align: left; /* Ensure left alignment */
-                }
-
-                .form-table td {
-                    padding-top: 20px;
-                    padding-bottom: 20px;
-                    text-align: left; /* Ensure left alignment */
-                }
-
-                .regular-text, input[type="number"], select, textarea.code {
-                    width: 100%;
-                    max-width: 450px;
-                    padding: 12px 15px;
-                    border: 1px solid #dcdcdc;
-                    border-radius: 8px;
-                    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
-                    transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-                    font-size: 1em;
-                    direction: ltr; /* Ensure LTR for input fields */
-                    text-align: left; /* Ensure left alignment for input fields */
-                }
-
-                .regular-text:focus, input[type="number"]:focus, select:focus, textarea.code:focus {
-                    border-color: #007bff;
-                    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.25);
-                    outline: none;
-                }
-
-                input[type="checkbox"] {
-                    width: auto;
-                    margin-right: 8px;
-                    transform: scale(1.2);
-                    vertical-align: middle;
-                }
-
-                .description {
-                    font-size: 0.9em;
-                    color: #7a7a7a;
-                    margin-top: 8px;
-                    line-height: 1.5;
-                }
-
-                textarea.code {
-                    font-family: 'Consolas', 'Monaco', monospace;
-                    background-color: #f8f9fa;
-                    border: 1px solid #e0e7ed;
-                }
-
-                /* Submit Button */
-                .submit {
-                    padding-top: 30px;
-                    text-align: center;
-                }
-
-                .submit .button-primary {
-                    background: linear-gradient(to right, #007bff, #0056b3);
-                    border: none;
-                    box-shadow: 0 5px 15px rgba(0, 123, 255, 0.25);
-                    text-shadow: none;
-                    border-radius: 8px;
-                    padding: 14px 30px;
-                    font-size: 1.2em;
-                    font-weight: 600;
-                    height: auto;
-                    cursor: pointer;
-                    transition: all 0.3s ease;
-                    color: #fff;
-                }
-
-                .submit .button-primary:hover,
-                .submit .button-primary:focus {
-                    background: linear-gradient(to right, #0056b3, #004085);
-                    box-shadow: 0 8px 20px rgba(0, 123, 255, 0.35);
-                    transform: translateY(-2px);
-                }
-
-                /* Usage Instructions */
-                .usage-instructions {
-                    background-color: #e6f7ff;
-                    border: 1px solid #b3e0ff;
-                    border-radius: 12px;
-                    padding: 30px;
-                    margin-top: 50px;
-                    color: #0056b3;
-                    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.03);
-                }
-
-                .usage-instructions h3 {
-                    color: #004085;
-                    font-size: 1.6em;
-                    margin-top: 0;
-                    margin-bottom: 20px;
-                    font-weight: 600;
-                }
-
-                .usage-instructions code {
-                    background-color: #cceeff;
-                    padding: 4px 8px;
-                    border-radius: 5px;
-                    font-family: 'Consolas', 'Monaco', monospace;
-                    color: #333;
-                    font-size: 0.95em;
-                    border: 1px solid #aaddff;
-                    direction: ltr;
-                    text-align: left;
-                }
-
-                .usage-instructions ul {
-                    list-style-type: '🚀 '; /* Custom bullet point */
-                    margin-left: 25px;
-                    padding-left: 0;
-                }
-
-                .usage-instructions ul li {
-                    margin-bottom: 10px;
-                }
-
-                .usage-instructions strong {
-                    color: #004085;
-                }
-
-                pre {
-                    background-color: #cceeff;
-                    padding: 15px;
-                    border-radius: 8px;
-                    border: 1px solid #aaddff;
-                    overflow-x: auto;
-                    font-size: 0.9em;
-                    direction: ltr;
-                    text-align: left;
-                }
-            </style>
-
             <div class="sam-settings-container">
                 <h1><?php echo esc_html( get_admin_page_title() ); ?></h1>
                 <form action="options.php" method="post">
@@ -783,5 +601,3 @@ class Sam_Reading_Time_Plugin {
 
 // Create an instance of the plugin class to activate functionalities.
 new Sam_Reading_Time_Plugin();
-
-?>
