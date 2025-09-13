@@ -66,6 +66,21 @@ For example:
 
 ---
 
+## 🌍 SEO & Rich Snippets
+
+- Supports Schema.org `timeRequired` JSON-LD for Google Rich Snippets.
+- Can be toggled on/off in settings.
+- Enhances search visibility and user engagement.
+
+---
+
+## 🌐 Multilingual Support
+
+- Fully compatible with Polylang and WPML.
+- Calculates reading time correctly for translated content.
+
+---
+
 ## 🌍 WordPress.org Repository
 
 Sam Reading Time is officially listed in the [WordPress Plugin Directory](https://wordpress.org/plugins/sam-reading-time/).
