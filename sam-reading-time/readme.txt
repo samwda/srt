@@ -5,7 +5,7 @@ Tags: reading time, estimated reading time, shortcode, post meta, simple plugin
 Requires at least: 5.0
 Tested up to: 6.8
 Requires PHP: 7.2
-Stable tag: 1.0
+Stable tag: 2.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -24,6 +24,8 @@ Includes a minimal settings page directly accessible under the "Posts" admin men
 - Compatible with all post types
 - Easy to use and theme-friendly
 - No external dependencies or JS
+-SEO & Rich Snippets
+-Multilingual Support
 
 == Installation ==
 
@@ -65,19 +67,36 @@ Yes, as long as they support `the_content`.
 
 == Changelog ==
 
-= 1.0.0 =
+= 2.0 =
+* Added admin post list column to display reading time for all post types.
+* Added sorting capability for reading time column.
+* Accurate reading time calculation excluding code blocks, images, videos, and HTML tags.
+* Full support for Custom Post Types (CPT).
+* Added Schema.org `timeRequired` JSON-LD markup for SEO Rich Snippets.
+* Shortcode-aware schema: schema markup only added if [sam_reading_time] is used.
+* Full compatibility with Polylang and WPML for translated content.
+
+= 1.0 =
 * Initial public release with shortcode and settings page.
 
 == Upgrade Notice ==
+= 2.0.0 =
+This update introduces a major upgrade:
 
-= 1.0.0 =
+* Admin post list column for reading time with sorting.
+* Schema.org `timeRequired` JSON-LD for Google Rich Snippets.
+* Full compatibility with Polylang and WPML.
+
+Make sure to review the new settings after upgrading!
+
+= 1.0 =
 First stable release of Sam Reading Time (SRT).
 
 == Credits ==
 
-Developed by Seyyed Ahmadreza Mahjoob – https://samwda.ir
+Developed by SAM Web Design Agency – https://samwda.ir
 
 == License ==
 
-This plugin is licensed under the GPLv2 or later.  
+This plugin is licensed under the GPLv2 or later.
 See https://www.gnu.org/licenses/gpl-2.0.html for details.
