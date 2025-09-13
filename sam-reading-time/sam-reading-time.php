@@ -3,10 +3,10 @@
  * Plugin Name: Sam Reading Time
  * Plugin URI:  https://github.com/samwda/srt/
  * Description: A lightweight WordPress plugin to display the estimated reading time of posts and pages using the [sam_reading_time] shortcode.
- * Version:     1.0
+ * Version:     2.0
  * Author:      Seyyed Ahmadreza Mahjoob
  * Author URI:  https://samwda.ir
- * License:     GPL2
+ * License:     GPLv2
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain: sam-reading-time
  * Requires at least: 5.0
@@ -23,6 +23,8 @@ if ( ! defined( 'ABSPATH' ) ) {
  * Manages all plugin functionalities including the shortcode and settings.
  */
 class Sam_Reading_Time_Plugin {
+
+    private $schema_should_output = false;
 
     /**
      * Constructor.
@@ -41,6 +43,16 @@ class Sam_Reading_Time_Plugin {
 
         // Enqueue styles for the admin settings page
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_styles' ) );
+
+        add_filter('manage_posts_columns', array($this, 'add_reading_time_column'));
+        add_filter('manage_pages_columns', array($this, 'add_reading_time_column'));
+        add_action('manage_posts_custom_column', array($this, 'show_reading_time_column'), 10, 2);
+        add_action('manage_pages_custom_column', array($this, 'show_reading_time_column'), 10, 2);
+        add_action('init', array($this, 'add_cpt_reading_time_column_support'));
+        add_filter('manage_edit-post_sortable_columns', array($this, 'make_reading_time_column_sortable'));
+        add_filter('manage_edit-page_sortable_columns', array($this, 'make_reading_time_column_sortable'));
+        add_action('pre_get_posts', array($this, 'reading_time_orderby_query'));
+        add_action('wp_head', array($this, 'add_time_required_jsonld'));
     }
 
     /**
@@ -61,17 +73,91 @@ class Sam_Reading_Time_Plugin {
      * @param string $hook The current admin page.
      */
     public function enqueue_admin_styles( $hook ) {
-        // Only enqueue our styles on our specific settings page.
         if ( 'posts_page_sam-reading-time' !== $hook ) {
             return;
         }
-
-        wp_enqueue_style(
-            'sam-reading-time-admin-style',
-            plugin_dir_url( __FILE__ ) . 'assets/css/sam-reading-time-admin-style.css',
-            array(),
-            filemtime( plugin_dir_path( __FILE__ ) . 'assets/css/sam-reading-time-admin-style.css' )
-        );
+        wp_enqueue_style('sam-reading-time-admin-style', plugin_dir_url(__FILE__) . 'assets/css/sam-reading-time-admin-style.css', array(), filemtime(plugin_dir_path(__FILE__) . 'assets/css/sam-reading-time-admin-style.css'));
+        wp_add_inline_style('sam-reading-time-admin-style', '
+.sam-settings-container {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px solid #e5e5e5;
+  box-shadow: 0 2px 12px rgba(220,0,0,0.07);
+  padding: 36px 28px 28px 28px;
+  max-width: 700px;
+  margin: 32px auto;
+}
+.sam-settings-container h1, .sam-settings-container h2, .sam-settings-container h3 {
+  color: #d00;
+  font-weight: 700;
+  margin-bottom: 16px;
+}
+.sam-settings-container form {
+  margin-bottom: 24px;
+}
+.sam-settings-container input, .sam-settings-container select, .sam-settings-container textarea {
+  border: 1.5px solid #d00;
+  background: #fff;
+  color: #d00;
+  border-radius: 6px;
+  padding: 8px 14px;
+  font-size: 15px;
+  margin-bottom: 10px;
+  transition: border 0.2s;
+}
+.sam-settings-container input:focus, .sam-settings-container select:focus, .sam-settings-container textarea:focus {
+  border-color: #a00;
+  outline: none;
+}
+.sam-settings-container input[type="checkbox"] {
+  accent-color: #d00;
+  width: 18px;
+  height: 18px;
+}
+.sam-settings-container .description {
+  color: #d00;
+  font-size: 13px;
+  margin-top: 2px;
+  margin-bottom: 14px;
+}
+.sam-settings-container .usage-instructions {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 1px 6px rgba(220,0,0,0.05);
+  padding: 18px 14px;
+  margin-top: 18px;
+  border-left: 4px solid #d00;
+}
+.sam-settings-container code, .sam-settings-container pre {
+  background: #fff;
+  color: #d00;
+  border: 1px solid #d00;
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-size: 14px;
+  font-family: "Fira Mono", "Consolas", "Menlo", monospace;
+}
+.sam-settings-container pre {
+  padding: 8px;
+  margin-top: 6px;
+}
+.sam-settings-container .button-primary {
+  background: #d00;
+  border: none;
+  color: #fff;
+  font-weight: 700;
+  border-radius: 6px;
+  box-shadow: 0 1px 4px rgba(220,0,0,0.07);
+  padding: 10px 24px;
+  font-size: 16px;
+  transition: background 0.2s, color 0.2s;
+}
+.sam-settings-container .button-primary:hover {
+  background: #fff;
+  color: #d00;
+  border: 1.5px solid #d00;
+}
+');
     }
 
     /**
@@ -110,6 +196,8 @@ class Sam_Reading_Time_Plugin {
      * @return string Formatted reading time HTML.
      */
     public function display_reading_time_shortcode( $atts ) {
+        $this->schema_should_output = true;
+
         // Get global settings directly. Shortcode attributes are ignored for most settings.
         $words_per_minute        = get_option( 'sam_reading_time_words_per_minute', 200 );
         /* translators: %1$s: The number of minutes. */
@@ -420,6 +508,25 @@ class Sam_Reading_Time_Plugin {
                 'show_in_rest'      => false,
             )
         );
+
+        // Register field for Enable Schema.org timeRequired.
+        add_settings_field(
+            'sam_reading_time_enable_schema_time_required',
+            esc_html__('Enable Schema.org timeRequired', 'sam-reading-time'),
+            array($this, 'enable_schema_time_required_callback'),
+            'sam-reading-time',
+            'sam_reading_time_plugin_section'
+        );
+        register_setting(
+            'sam_reading_time',
+            'sam_reading_time_enable_schema_time_required',
+            array(
+                'type' => 'boolean',
+                'sanitize_callback' => 'rest_sanitize_boolean',
+                'default' => true,
+                'show_in_rest' => false,
+            )
+        );
     }
 
     /**
@@ -546,6 +653,15 @@ class Sam_Reading_Time_Plugin {
     }
 
     /**
+     * Callback for the Enable Schema.org timeRequired checkbox.
+     */
+    public function enable_schema_time_required_callback() {
+        $enable = get_option('sam_reading_time_enable_schema_time_required', true);
+        echo '<input type="checkbox" name="sam_reading_time_enable_schema_time_required" value="1" ' . checked(1, $enable, false) . ' />';
+        echo '<p class="description">' . esc_html__('Enable Schema.org timeRequired JSON-LD markup for Google Rich Snippets. Note: Markup will only be output if the [sam_reading_time] shortcode is used in the post content.', 'sam-reading-time') . '</p>';
+    }
+
+    /**
      * Displays the HTML for the plugin's settings page.
      */
     public function options_page_html() {
@@ -596,6 +712,130 @@ class Sam_Reading_Time_Plugin {
             </div>
         </div>
         <?php
+    }
+
+    /**
+     * Adds support for reading time column in custom post types.
+     */
+    public function add_cpt_reading_time_column_support() {
+        $post_types = get_post_types(['public' => true], 'names');
+        foreach ($post_types as $type) {
+            if (!in_array($type, ['post', 'page'])) {
+                add_filter("manage_{$type}_columns", array($this, 'add_reading_time_column'));
+                add_action("manage_{$type}_custom_column", array($this, 'show_reading_time_column'), 10, 2);
+                add_filter("manage_edit-{$type}_sortable_columns", array($this, 'make_reading_time_column_sortable'));
+            }
+        }
+    }
+
+    /**
+     * Adds the reading time column to the posts and pages list.
+     */
+    public function add_reading_time_column($columns) {
+        $columns['reading_time'] = __('Reading Time', 'sam-reading-time');
+        return $columns;
+    }
+
+    /**
+     * Displays the reading time in the custom column for posts and pages.
+     */
+    public function show_reading_time_column($column, $post_id) {
+        if ($column === 'reading_time') {
+            echo esc_html($this->get_reading_time($post_id));
+        }
+    }
+
+    /**
+     * Makes the reading time column sortable.
+     */
+    public function make_reading_time_column_sortable($columns) {
+        $columns['reading_time'] = 'reading_time';
+        return $columns;
+    }
+
+    /**
+     * Modifies the query to sort by reading time.
+     */
+    public function reading_time_orderby_query($query) {
+        if (!is_admin() || !$query->is_main_query()) return;
+        $orderby = $query->get('orderby');
+        if ($orderby == 'reading_time') {
+            $query->set('orderby', null);
+            $query->set('posts_per_page', $query->get('posts_per_page'));
+            add_filter('posts_clauses', function($clauses, $wp_query) {
+                global $wpdb;
+                if (isset($wp_query->query['orderby']) && $wp_query->query['orderby'] === null) {
+                    $clauses['fields'] .= ", (LENGTH({$wpdb->posts}.post_content) - LENGTH(REPLACE({$wpdb->posts}.post_content, ' ', ''))) AS reading_time_words";
+                    $clauses['orderby'] = "reading_time_words ASC";
+                }
+                return $clauses;
+            }, 10, 2);
+        }
+    }
+
+    /**
+     * Removes shortcodes, images, videos, and HTML tags for accurate reading time calculation.
+     */
+    private function clean_content_for_reading_time($content) {
+        $content = strip_shortcodes($content);
+        $content = preg_replace('/<pre.*?<\/pre>|<code.*?<\/code>/is', '', $content);
+        $content = preg_replace('/<img[^>]+>|<video.*?<\/video>/is', '', $content);
+        $content = wp_strip_all_tags($content);
+        $content = preg_replace('/\s+/u', ' ', $content);
+        return trim($content);
+    }
+
+    /**
+     * Retrieves the reading time from post meta or calculates it if not present.
+     */
+    public function get_reading_time($post_id) {
+        $content = $this->get_translated_content($post_id);
+        $word_count = $this->count_words($this->clean_content_for_reading_time($content));
+        $wpm = get_option('sam_reading_time_words_per_minute', 200);
+        $reading_time = ceil($word_count / max(1, (int)$wpm));
+        return $reading_time ? $reading_time . ' min' : '';
+    }
+
+    /**
+     * Adds JSON-LD Schema.org markup to the head of each post for reading time.
+     */
+    public function add_time_required_jsonld() {
+        $enable = get_option('sam_reading_time_enable_schema_time_required', true);
+        if (!$enable || !$this->schema_should_output) return;
+        if (is_singular()) {
+            global $post;
+            $reading_time = $this->get_reading_time($post->ID);
+            $iso_duration = 'PT' . intval($reading_time) . 'M';
+            echo '<script type="application/ld+json">' . json_encode([
+                "@context" => "https://schema.org",
+                "@type" => "Article",
+                "timeRequired" => $iso_duration
+            ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) . '</script>';
+        }
+    }
+
+    /**
+     * Retrieves the translated content for compatibility with Polylang and WPML.
+     */
+    public function get_translated_content($post_id) {
+        if (function_exists('pll_get_post')) {
+            $lang = pll_current_language();
+            $translated_id = pll_get_post($post_id, $lang);
+            if ($translated_id) {
+                $post = get_post($translated_id);
+                return $post->post_content;
+            }
+        }
+        if (function_exists('icl_object_id')) {
+            $lang = apply_filters('wpml_current_language', NULL);
+            $translated_id = icl_object_id($post_id, get_post_type($post_id), true, $lang);
+            if ($translated_id) {
+                $post = get_post($translated_id);
+                return $post->post_content;
+            }
+        }
+        $post = get_post($post_id);
+        return $post ? $post->post_content : '';
     }
 }
 
