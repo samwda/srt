@@ -3,7 +3,7 @@
  * Plugin Name: Sam Reading Time
  * Plugin URI:  https://github.com/samwda/srt/
  * Description: A lightweight WordPress plugin to display the estimated reading time of posts and pages using the [sam_reading_time] shortcode.
- * Version:     2.0
+ * Version:     2.1
  * Author:      Seyyed Ahmadreza Mahjoob
  * Author URI:  https://samwda.ir
  * License:     GPLv2
@@ -41,7 +41,7 @@ class Sam_Reading_Time_Plugin {
         // Enqueue styles for the frontend
         add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_plugin_styles' ) );
 
-        // Enqueue styles for the admin settings page
+        // Enqueue admin styles (inline CSS for settings page)
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_admin_styles' ) );
 
         add_filter('manage_posts_columns', array($this, 'add_reading_time_column'));
@@ -57,18 +57,14 @@ class Sam_Reading_Time_Plugin {
 
     /**
      * Enqueues the plugin's CSS file for the frontend.
+     * (Removed: No external CSS file is enqueued anymore.)
      */
     public function enqueue_plugin_styles() {
-        wp_enqueue_style(
-            'sam-reading-time-style', // Handle for the stylesheet
-            plugin_dir_url( __FILE__ ) . 'assets/css/sam-reading-time-style.css', // Path to your CSS file
-            array(), // Dependencies (none in this case)
-            filemtime( plugin_dir_path( __FILE__ ) . 'assets/css/sam-reading-time-style.css' ) // Version based on file modification time
-        );
+        // No external CSS file is enqueued.
     }
 
     /**
-     * Enqueues the plugin's CSS file specifically for the admin settings page.
+     * Enqueues the plugin's admin CSS for the settings page using admin_head and inline <style>.
      *
      * @param string $hook The current admin page.
      */
@@ -76,88 +72,92 @@ class Sam_Reading_Time_Plugin {
         if ( 'posts_page_sam-reading-time' !== $hook ) {
             return;
         }
-        wp_enqueue_style('sam-reading-time-admin-style', plugin_dir_url(__FILE__) . 'assets/css/sam-reading-time-admin-style.css', array(), filemtime(plugin_dir_path(__FILE__) . 'assets/css/sam-reading-time-admin-style.css'));
-        wp_add_inline_style('sam-reading-time-admin-style', '
-.sam-settings-container {
-  background: #fff;
-  border-radius: 12px;
-  border: 1px solid #e5e5e5;
-  box-shadow: 0 2px 12px rgba(220,0,0,0.07);
-  padding: 36px 28px 28px 28px;
-  max-width: 700px;
-  margin: 32px auto;
-}
-.sam-settings-container h1, .sam-settings-container h2, .sam-settings-container h3 {
-  color: #d00;
-  font-weight: 700;
-  margin-bottom: 16px;
-}
-.sam-settings-container form {
-  margin-bottom: 24px;
-}
-.sam-settings-container input, .sam-settings-container select, .sam-settings-container textarea {
-  border: 1.5px solid #d00;
-  background: #fff;
-  color: #d00;
-  border-radius: 6px;
-  padding: 8px 14px;
-  font-size: 15px;
-  margin-bottom: 10px;
-  transition: border 0.2s;
-}
-.sam-settings-container input:focus, .sam-settings-container select:focus, .sam-settings-container textarea:focus {
-  border-color: #a00;
-  outline: none;
-}
-.sam-settings-container input[type="checkbox"] {
-  accent-color: #d00;
-  width: 18px;
-  height: 18px;
-}
-.sam-settings-container .description {
-  color: #d00;
-  font-size: 13px;
-  margin-top: 2px;
-  margin-bottom: 14px;
-}
-.sam-settings-container .usage-instructions {
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 1px 6px rgba(220,0,0,0.05);
-  padding: 18px 14px;
-  margin-top: 18px;
-  border-left: 4px solid #d00;
-}
-.sam-settings-container code, .sam-settings-container pre {
-  background: #fff;
-  color: #d00;
-  border: 1px solid #d00;
-  border-radius: 4px;
-  padding: 2px 8px;
-  font-size: 14px;
-  font-family: "Fira Mono", "Consolas", "Menlo", monospace;
-}
-.sam-settings-container pre {
-  padding: 8px;
-  margin-top: 6px;
-}
-.sam-settings-container .button-primary {
-  background: #d00;
-  border: none;
-  color: #fff;
-  font-weight: 700;
-  border-radius: 6px;
-  box-shadow: 0 1px 4px rgba(220,0,0,0.07);
-  padding: 10px 24px;
-  font-size: 16px;
-  transition: background 0.2s, color 0.2s;
-}
-.sam-settings-container .button-primary:hover {
-  background: #fff;
-  color: #d00;
-  border: 1.5px solid #d00;
-}
-');
+        // Add inline CSS to admin_head (no external files or wp_add_inline_style)
+        add_action('admin_head', function() {
+            ?>
+            <style>
+            .sam-settings-container {
+              background: #fff;
+              border-radius: 12px;
+              border: 1px solid #e5e5e5;
+              box-shadow: 0 2px 12px rgba(220,0,0,0.07);
+              padding: 36px 28px 28px 28px;
+              max-width: 700px;
+              margin: 32px auto;
+            }
+            .sam-settings-container h1, .sam-settings-container h2, .sam-settings-container h3 {
+              color: #d00;
+              font-weight: 700;
+              margin-bottom: 16px;
+            }
+            .sam-settings-container form {
+              margin-bottom: 24px;
+            }
+            .sam-settings-container input, .sam-settings-container select, .sam-settings-container textarea {
+              border: 1.5px solid #d00;
+              background: #fff;
+              color: #d00;
+              border-radius: 6px;
+              padding: 8px 14px;
+              font-size: 15px;
+              margin-bottom: 10px;
+              transition: border 0.2s;
+            }
+            .sam-settings-container input:focus, .sam-settings-container select:focus, .sam-settings-container textarea:focus {
+              border-color: #a00;
+              outline: none;
+            }
+            .sam-settings-container input[type="checkbox"] {
+              accent-color: #d00;
+              width: 18px;
+              height: 18px;
+            }
+            .sam-settings-container .description {
+              color: #d00;
+              font-size: 13px;
+              margin-top: 2px;
+              margin-bottom: 14px;
+            }
+            .sam-settings-container .usage-instructions {
+              background: #fff;
+              border-radius: 8px;
+              box-shadow: 0 1px 6px rgba(220,0,0,0.05);
+              padding: 18px 14px;
+              margin-top: 18px;
+              border-left: 4px solid #d00;
+            }
+            .sam-settings-container code, .sam-settings-container pre {
+              background: #fff;
+              color: #d00;
+              border: 1px solid #d00;
+              border-radius: 4px;
+              padding: 2px 8px;
+              font-size: 14px;
+              font-family: "Fira Mono", "Consolas", "Menlo", monospace;
+            }
+            .sam-settings-container pre {
+              padding: 8px;
+              margin-top: 6px;
+            }
+            .sam-settings-container .button-primary {
+              background: #d00;
+              border: none;
+              color: #fff;
+              font-weight: 700;
+              border-radius: 6px;
+              box-shadow: 0 1px 4px rgba(220,0,0,0.07);
+              padding: 10px 24px;
+              font-size: 16px;
+              transition: background 0.2s, color 0.2s;
+            }
+            .sam-settings-container .button-primary:hover {
+              background: #fff;
+              color: #d00;
+              border: 1.5px solid #d00;
+            }
+            </style>
+            <?php
+        });
     }
 
     /**
