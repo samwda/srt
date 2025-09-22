@@ -4,7 +4,7 @@
  * Plugin URI:  https://github.com/samwda/srt/
  * Description: A lightweight WordPress plugin to display the estimated reading time of posts and pages using the [sam_reading_time] shortcode.
  * Version:     2.1
- * Author:      Seyyed Ahmadreza Mahjoob
+ * Author:      SAM Web Design Agency
  * Author URI:  https://samwda.ir
  * License:     GPLv2
  * License URI: https://www.gnu.org/licenses/gpl-2.0.html
