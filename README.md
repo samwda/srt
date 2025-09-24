@@ -1,7 +1,6 @@
 # ⏱️ Sam Reading Time (SRT) – WordPress Plugin
 [![WordPress Plugin](https://img.shields.io/wordpress/plugin/v/sam-reading-time.svg?style=flat-square)](https://wordpress.org/plugins/sam-reading-time/)
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/samwda/srt?style=flat-square)](https://github.com/samwda/srt/releases)
-[![License](https://img.shields.io/github/license/samwda/srt?style=flat-square)](https://github.com/samwda/srt/blob/main/LICENSE.txt)
 
 **Sam Reading Time (SRT)** is a super lightweight WordPress plugin that calculates and displays the estimated reading time for your posts and pages using a simple shortcode.
 
